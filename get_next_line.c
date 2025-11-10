@@ -16,69 +16,118 @@
 #include <stdlib.h>
 #include <string.h>
 
-// read line from file referenced by file descriptor one line at a time
-// get to know how many times i should read with buffer_size
-// must return the line even if the buffer size is shorter than the line
-// 
 
-// using cc -D defines a macro for the size of the buffer
+// strncat to concatenate stash + next buffer
+
+// return line from a file using file descriptor
+// have a loop that will read into the buffer while 
+// declare a buffer that will store the reading of each read call
+// create a stash that will store the string in the buffer
+// read and check stash until my stash contains a new line
+// if it contains a new line, put the previous characters including the \n from the stash into the result string
+// remove the extracted string from the stash
+// string copy to trim beginning of string
 
 
-// we want to include newline each line but not if end of file
+// "abcd\ne"
 
-size_t newline_check(const char *str)
+
+size_t ft_strlen(char *str)
 {
-    size_t pos;
-    size_t flag;
+    int i;
+    i = 0;
+    while (str[i])
+        i++;
+    return (i);
+}
 
-    flag = 0;
-    pos = 0;
-    while (str[pos])
+size_t find_newline(char *str)
+{
+    int i;
+
+    i = 0;
+    while (str[i])
     {
-        if (str[pos] == '\n')
-        {
-            flag = 1;
-            return (pos);
-        }
-        pos++;
+        if (str[i] == '\n')
+            return (i + 1);
+        i++;
     }
-    if (flag = 0)
-        return (flag);
+    return (0);
 }
-// know if there is a \n, if yes, give position, if not
 
-// addkadaddkd\n
-//zzzzz
-// abcd
-// 
-
-void    get_next_line(int fd)
+char     *get_next_line(int fd)
 {
-    char str[BUFFER_SIZE];
+    char buffer[BUFFER_SIZE];
+    static char *stash;
+    char *line;
+    char *temp;
+    int i;
 
-    read(fd, str, BUFFER_SIZE);
+    while (read(fd, buffer, BUFFER_SIZE) > 0)
+    {
+        if (stash == NULL)
+            stash = malloc(BUFFER_SIZE + 1);
 
-    printf("%s", str);
-    
+
+        stash = strncat(stash, buffer, BUFFER_SIZE);
+        i = find_newline(stash);
+
+        if (i > 0)
+        {
+            line = malloc(sizeof(char) * (ft_strlen(stash)) + 1); // Lorum ips,\nd
+            temp = malloc(sizeof(char) * (ft_strlen(stash)) + 1);
+
+            // copy the substring into line
+            //line[0] = '\0';
+            line = memmove(line, stash, i);
+            temp = memmove(temp, stash + i, ft_strlen(stash + i));
+            free(stash);
+            stash = temp;
+            return (line);
+        }
+    }
+    //if (read(fd, buffer, BUFFER_SIZE) == 0)
+        //return (NULL);
 }
-// after setting up the buffer for the read
-// in each loop, allocate memory for n bytes, and read n bytes
-// check if the buffer string contains a \n
-// if it does, null truncate the buffer at position buffer[pos + 1] 
-// then free and return the buffer
+// abcde/nas
+// i
+
 
 int main(void)
 {
-    int fd = open("textinput.txt", O_RDWR);
+    int fd = open("textinput.txt", O_RDONLY);
+    //printf("%li", find_newline("abdd\ne"));
 
+    int i = 0;
+    
+    while (i < 20)
+    {
+       printf("%s", get_next_line(fd));
+        i++;
+    }
+
+    /*
+    printf("%s", get_next_line(fd));
+    printf("%s", get_next_line(fd));
+    printf("%s", get_next_line(fd));
+    printf("%s", get_next_line(fd));
+    printf("%s", get_next_line(fd));
+    printf("%s", get_next_line(fd));
+    */
+    /*
     get_next_line(fd);
     get_next_line(fd);
     get_next_line(fd);
     get_next_line(fd);
-
-
-
+    get_next_line(fd);
+    get_next_line(fd);
+    get_next_line(fd);
+    get_next_line(fd);
+    get_next_line(fd);
+    get_next_line(fd);
+    get_next_line(fd);*/
 }
+
 
 // in main
 // open to get file descriptor 
