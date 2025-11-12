@@ -41,7 +41,7 @@ size_t ft_strlen(char *str)
     return (i);
 }
 
-size_t find_newline(char *str)
+ssize_t find_newline(char *str)
 {
     int i;
 
@@ -52,7 +52,7 @@ size_t find_newline(char *str)
             return (i + 1);
         i++;
     }
-    return (0);
+    return (-1);
 }
 
 char     *get_next_line(int fd)
@@ -62,32 +62,46 @@ char     *get_next_line(int fd)
     char *line;
     char *temp;
     int i;
+    ssize_t bytes_read;
 
-    while (read(fd, buffer, BUFFER_SIZE) > 0)
+    bytes_read = read(fd, buffer, BUFFER_SIZE);
+    while (bytes_read > 0) // check jusqua eof
     {
-        if (stash == NULL)
-            stash = malloc(BUFFER_SIZE + 1);
-
-
-        stash = strncat(stash, buffer, BUFFER_SIZE);
-        i = find_newline(stash);
-
-        if (i > 0)
+        if (stash == NULL) // si variavle statique non initialisee, malloc
         {
-            line = malloc(sizeof(char) * (ft_strlen(stash)) + 1); // Lorum ips,\nd
-            temp = malloc(sizeof(char) * (ft_strlen(stash)) + 1);
+            stash = malloc(bytes_read + 1);
+            stash[0] = '\0';
+        }
 
-            // copy the substring into line
-            //line[0] = '\0';
-            line = memmove(line, stash, i);
-            temp = memmove(temp, stash + i, ft_strlen(stash + i));
+        stash = strncat(stash, buffer, bytes_read); // copier buffer dans la reserve
+        i = find_newline(stash); // donner position de la newline
+
+        if (i >= 0) // si newline
+        {
+            line = malloc(i + 1); // allouer memoire pour la taille de la reserve
+            temp = malloc(sizeof(char) * (ft_strlen(stash + i)) + 1); // pareil
+
+            line = memmove(line, stash, i); // copier reserve dans line jusqu'au \n
+    
+            temp = memmove(temp, stash + i, ft_strlen(stash + i)); // nouveau pointeur pour free la stash
+            temp[ft_strlen(stash + i ) + 1] = '\0';
             free(stash);
-            stash = temp;
+            stash = temp; // mettre a l'adresse de la nouvelle ligne
             return (line);
         }
+   
+        if (bytes_read == 0 && *stash && stash)
+        {
+            line = malloc(ft_strlen(stash) + 1);
+            line = memmove(line, stash, (ft_strlen(stash)));
+            line[ft_strlen(stash)] = '\0'; 
+            free(stash);
+            stash = NULL;
+            return line;
+        }
+        bytes_read = read(fd, buffer, BUFFER_SIZE);
     }
-    //if (read(fd, buffer, BUFFER_SIZE) == 0)
-        //return (NULL);
+    return NULL;
 }
 // abcde/nas
 // i
@@ -100,7 +114,7 @@ int main(void)
 
     int i = 0;
     
-    while (i < 20)
+    while (i < 5)
     {
        printf("%s", get_next_line(fd));
         i++;
