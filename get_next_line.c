@@ -32,7 +32,7 @@
 // "abcd\ne"
 
 
-size_t ft_strlen(char *str)
+size_t ft_strlen(const char *str)
 {
     int i;
     i = 0;
@@ -55,93 +55,112 @@ ssize_t find_newline(char *str)
     return (-1);
 }
 
+char	*ft_strjoin(char const *s1, char const *s2)
+{
+	char	*str;
+	int		total_len;
+	size_t	i;
+
+	i = 0;
+	total_len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	str = malloc(sizeof(char) * total_len);
+	if (!str)
+		return (NULL);
+	while (*s1 != '\0')
+	{
+		str[i] = *s1;
+		i++;
+		s1++;
+	}
+	while (*s2 != '\0')
+	{
+		str[i] = *s2;
+		s2++;
+		i++;
+	}
+	str[i] = '\0';
+	return (str);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char	*dup;
+	int		len;
+	int		i;
+
+	i = 0;
+	len = ft_strlen(s);
+	dup = malloc(sizeof(char) * len + 1);
+	if (!dup)
+		return (NULL);
+	while (s[i] != '\0')
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
 char     *get_next_line(int fd)
 {
     char buffer[BUFFER_SIZE];
     static char *stash;
     char *line;
-    char *temp;
     int i;
     ssize_t bytes_read;
+    char *new_stash;
+
+    //if (fd == 0 || BUFFER_SIZE == 0)
+      //  return (NULL);
 
     bytes_read = read(fd, buffer, BUFFER_SIZE);
-    while (bytes_read > 0) // check jusqua eof
+    while (bytes_read > 0)
     {
-        if (stash == NULL) // si variavle statique non initialisee, malloc
+        buffer[bytes_read] = '\0';
+        if (stash == NULL)
         {
             stash = malloc(bytes_read + 1);
             stash[0] = '\0';
         }
-
-        stash = strncat(stash, buffer, bytes_read); // copier buffer dans la reserve
+        stash = ft_strjoin(stash, buffer);
         i = find_newline(stash); // donner position de la newline
-
-        if (i >= 0) // si newline
+        if (i > 0) // si newline
         {
-            line = malloc(i + 1); // allouer memoire pour la taille de la reserve
-            temp = malloc(sizeof(char) * (ft_strlen(stash + i)) + 1); // pareil
-
-            line = memmove(line, stash, i); // copier reserve dans line jusqu'au \n
-    
-            temp = memmove(temp, stash + i, ft_strlen(stash + i)); // nouveau pointeur pour free la stash
-            temp[ft_strlen(stash + i ) + 1] = '\0';
+            line = malloc((sizeof(char) * i ) + 1);
+            line = strncpy(line, stash, i);
+            line[i] = '\0';
+            new_stash = ft_strdup(stash + i);
             free(stash);
-            stash = temp; // mettre a l'adresse de la nouvelle ligne
+            stash = new_stash;
             return (line);
-        }
-   
-        if (bytes_read == 0 && *stash && stash)
-        {
-            line = malloc(ft_strlen(stash) + 1);
-            line = memmove(line, stash, (ft_strlen(stash)));
-            line[ft_strlen(stash)] = '\0'; 
-            free(stash);
-            stash = NULL;
-            return line;
         }
         bytes_read = read(fd, buffer, BUFFER_SIZE);
     }
+    if (stash && *stash)
+    {
+        line = ft_strdup(stash);
+        free(stash);
+        stash = NULL;
+        return (line);
+    }
     return NULL;
 }
-// abcde/nas
-// i
-
 
 int main(void)
 {
     int fd = open("textinput.txt", O_RDONLY);
     //printf("%li", find_newline("abdd\ne"));
-
-    int i = 0;
     
-    while (i < 5)
+    char *line = get_next_line(fd);
+    while (line != NULL)
     {
-       printf("%s", get_next_line(fd));
-        i++;
+        printf("%s", line);
+        line = get_next_line(fd);
     }
+    close(fd);
 
-    /*
-    printf("%s", get_next_line(fd));
-    printf("%s", get_next_line(fd));
-    printf("%s", get_next_line(fd));
-    printf("%s", get_next_line(fd));
-    printf("%s", get_next_line(fd));
-    printf("%s", get_next_line(fd));
-    */
-    /*
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);
-    get_next_line(fd);*/
 }
-
 
 // in main
 // open to get file descriptor 
