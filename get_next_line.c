@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "get_next_line.h"
 
 ssize_t find_newline(char *str)
@@ -93,32 +92,24 @@ char     *get_next_line(int fd)
 
 int main(void)
 {
-    int fd = open("textinput.txt", O_RDONLY);
+   int fd = open("lyrics.txt", O_RDONLY);
+   int fd2 = open("textinput.txt", O_RDONLY);
     //printf("%li", find_newline("abdd\ne"));
    //int fd2 = open("lyrics.txt", O_RDONLY);
-    char *line1;
-   // char *line2;
-    //dup2(fd, 5);
-     line1 = get_next_line(fd);
-        printf("%s", line1);
-        free(line1);
-     line1 = get_next_line(fd); 
-     printf("%s", line1);
-     free(line1);
+    char *line;
+    char *line2;
     
-     //free(line1);
-
-   // line2 = get_next_line(fd2);
-   /* while (line1 && line2)
+    line = get_next_line(fd);
+    line2 = get_next_line(fd2);
+    while (line != NULL && line2 != NULL)
     {
-        printf("%s", line1);
-         free(line1);
+        printf("%s", line);
         printf("%s", line2);
-         free(line2);
-        line1 = get_next_line(fd);
-        line2 = get_next_line(fd2);
-    }*/
-
+       // free(line);
+       // free(line2);
+       line =  get_next_line(fd);
+       line2 = get_next_line(fd2);
+    }
     close(fd);
 }
 
