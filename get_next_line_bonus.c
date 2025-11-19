@@ -9,7 +9,6 @@
 /*   Updated: 2025/11/19 06:20:19 by zalabib-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include <fcntl.h> 
 #include <stdio.h>
 #include "get_next_line.h"
@@ -24,7 +23,7 @@ int	find_newline(char *str)
 	while (str[i])
 	{
 		if (str[i] == '\n')
-			return (i + 1);
+			return (i);
 		i++;
 	}
 	return (-1);
@@ -35,11 +34,15 @@ char	*extract_line(char **stash, int pos)
 {
 	char	*res;
 	char	*new_stash;
+	int len;
+	len = pos + 1;
 
-	res = malloc(pos + 1);
-	ft_strncpy(res, *stash, pos);
-	res[pos] = '\0';
-	new_stash = ft_strdup(*stash + pos);
+	res = malloc(sizeof(char) * (len + 1));
+	if (!res)
+		return (NULL);
+	ft_strncpy(res, *stash, len);
+	res[len] = '\0';
+	new_stash = ft_strdup(*stash + len);
 	free(*stash);
 	*stash = new_stash;
 	return (res);
@@ -53,15 +56,25 @@ char	*process(char **stash, char *buffer, size_t bytes_read)
 	char	*tmp;
 
 	i = 0;
+
+	if (bytes_read == 0)
+		return (NULL);
 	buffer[bytes_read] = '\0';
+
 	if (*stash)
 	{
 		tmp = ft_strjoin(*stash, buffer);
+		if (!tmp)
+			return (NULL);
 		free(*stash);
 		*stash = tmp;
 	}
-	if (!*stash)
+	else
+	{
 		*stash = ft_strdup(buffer);
+		if (!*stash)
+			return (NULL);
+	}
 	i = find_newline(*stash);
 	if (i >= 0)
 		return (extract_line(stash, i));
@@ -77,7 +90,7 @@ char	*empty_stash(char	**stash)
 	char	*line;
 
 	line = NULL;
-	if (*stash && **stash)
+	if (*stash)
 	{
 		line = ft_strdup(*stash);
 		free(*stash);
@@ -93,12 +106,23 @@ char	*get_next_line(int fd)
 	static char	*stash[1024];
 	ssize_t		bytes_read;
 	char		*line;
+	int			i;
 
-	if (fd < 0 || fd == 1 || fd == 2 || BUFFER_SIZE <= 0 || fd >= 1024)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = malloc(BUFFER_SIZE + 1);
+	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
+	if (stash[fd])
+	{
+		i = find_newline(stash[fd]);
+		if (i >= 0)
+		{
+			line = extract_line(&stash[fd], i);
+			free(buffer);
+			return (line);
+		}
+	}
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
 	while (bytes_read > 0)
 	{
@@ -111,11 +135,18 @@ char	*get_next_line(int fd)
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
-	return (empty_stash(&stash[fd]));
+	if (bytes_read < 0)
+	{
+		free(stash[fd]);
+		stash[fd] = NULL;
+		return (NULL);
+	}
+	if (stash[fd] && *stash[fd])
+		return (empty_stash(&stash[fd]));
+	free(stash[fd]);
+	stash[fd] = NULL;
+	return (NULL);
 }
-// read into buffer and pass buffer read into a stash
-// process every line
-// if end of file return the stash;
 
 /*
 int main(void)
