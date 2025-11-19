@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zalabib- <zalabib-@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: zalabib- <zalabib-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025-11-05 16:29:56 by zalabib-          #+#    #+#             */
-/*   Updated: 2025-11-05 16:29:56 by zalabib-         ###   ########.fr       */
+/*   Created: 2025/11/19 06:03:28 by zalabib-          #+#    #+#             */
+/*   Updated: 2025/11/19 06:03:34 by zalabib-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 size_t	ft_strlen(char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])

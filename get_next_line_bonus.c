@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zalabib- <zalabib-@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: zalabib- <zalabib-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025-11-05 16:29:59 by zalabib-          #+#    #+#             */
-/*   Updated: 2025-11-05 16:29:59 by zalabib-         ###   ########.fr       */
+/*   Created: 2025/11/19 06:03:59 by zalabib-          #+#    #+#             */
+/*   Updated: 2025/11/19 06:04:44 by zalabib-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ char	*empty_stash(char	**stash)
 char	*get_next_line(int fd)
 {
 	char		*buffer;
-	static char	*stash;
+	static char	*stash[1024];
 	ssize_t		bytes_read;
 	char		*line;
 
@@ -102,7 +102,7 @@ char	*get_next_line(int fd)
 	bytes_read = read(fd, buffer, BUFFER_SIZE);
 	while (bytes_read > 0)
 	{
-		line = process(&stash, buffer, bytes_read);
+		line = process(&stash[fd], buffer, bytes_read);
 		if (line)
 		{
 			free(buffer);
@@ -111,23 +111,36 @@ char	*get_next_line(int fd)
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 	}
 	free(buffer);
-	return (empty_stash(&stash));
+	return (empty_stash(&stash[fd]));
 }
 // read into buffer and pass buffer read into a stash
 // process every line
 // if end of file return the stash;
 
-
+/*
 int main(void)
 {
 	int fd = open("text.txt", O_RDONLY);
-   char *line;
+    int fd2 = open("text2.txt", O_RDONLY);
+    char *line = get_next_line(fd);
+    char *line2 = get_next_line(fd2);
   
-	while ((line = get_next_line(fd)) != NULL)
-	{
-		printf("%s", line);
-		free(line);
-	}
+	while (line2)
+    {
+        printf("%s", line2);
+        free(line2);
+        line2 = get_next_line(fd2);
+    }
+    free(line2);
+    printf("\n");
+    while (line)
+    {
+        printf("%s", line);
+        free(line);
+        line = get_next_line(fd);
+    }
+    free(line);
 	
 	close(fd);
-}
+    close (fd2);
+}*/
