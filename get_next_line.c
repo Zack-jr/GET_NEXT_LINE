@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: zalabib- <zalabib-@student.42madrid.com>   #+#  +:+       +#+        */
+/*   By: zalabib- <zalabib-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025-11-05 16:29:59 by zalabib-          #+#    #+#             */
-/*   Updated: 2025-11-05 16:29:59 by zalabib-         ###   ########.fr       */
+/*   Created: 2025/11/05 16:29:59 by zalabib-          #+#    #+#             */
+/*   Updated: 2025/11/19 06:20:51 by zalabib-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ char	*get_next_line(int fd)
 // process every line
 // if end of file return the stash;
 
-
+/*
 int main(void)
 {
 	int fd = open("text.txt", O_RDONLY);
@@ -128,6 +128,5 @@ int main(void)
 		printf("%s", line);
 		free(line);
 	}
-	
 	close(fd);
-}
+}*/
