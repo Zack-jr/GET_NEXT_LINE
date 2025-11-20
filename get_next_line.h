@@ -19,11 +19,11 @@
 
 # include <stdlib.h>
 
-size_t	ft_strlen(char *str);
 char	*ft_strdup(char *str);
 char	*ft_strjoin(char *s1, char *s2);
 void	ft_strncpy(char *dst, char *src, int n);
-char    *get_next_line(int fd);
-int     find_newline(char *str);
+char	*get_next_line(int fd);
+int		find_newline(char *str);
+char	*extract_line(char **stash, int pos);
 
 #endif

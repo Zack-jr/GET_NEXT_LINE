@@ -13,24 +13,18 @@
 #include "get_next_line.h"
 #include <stdlib.h>
 
-size_t	ft_strlen(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
-
 char	*ft_strdup(char *str)
 {
 	int		i;
 	char	*res;
+	int		len;
 
+	len = 0;
 	if (str == NULL)
 		return (NULL);
-	res = malloc(ft_strlen(str) + 1);
+	while (str[len])
+		len++;
+	res = malloc(len + 1);
 	if (!res)
 		return (NULL);
 	i = 0;
@@ -46,28 +40,23 @@ char	*ft_strdup(char *str)
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*res;
-	int		i;
-	int		j;
+	int		len1;
+	int		len2;
 
+	len1 = 0;
+	len2 = 0;
 	if (!s1 || !s2)
 		return (NULL);
-	i = 0;
-	j = 0;
-	res = malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
+	while (s1[len1])
+		len1++;
+	while (s2[len2])
+		len2++;
+	res = malloc(len1 + len2 + 1);
 	if (!res)
 		return (NULL);
-	while (s1[i])
-	{
-		res[i] = s1[i];
-		i++;
-	}
-	while (s2[j])
-	{
-		res[i] = s2[j];
-		i++;
-		j++;
-	}
-	res[i] = '\0';
+	ft_strncpy(res, s1, len1);
+	ft_strncpy(res + len1, s2, len2);
+	res[len1 + len2] = '\0';
 	return (res);
 }
 
@@ -98,4 +87,24 @@ int	find_newline(char *str)
 		i++;
 	}
 	return (-1);
+}
+
+char	*extract_line(char **stash, int pos)
+{
+	char	*res;
+	char	*new_stash;
+	int		len;
+
+	len = pos + 1;
+	res = malloc(sizeof(char) * (len) + 1);
+	if (!res)
+		return (NULL);
+	ft_strncpy(res, *stash, len);
+	res[len] = '\0';
+	new_stash = ft_strdup(*stash + len);
+	if (!new_stash)
+		return (NULL);
+	free(*stash);
+	*stash = new_stash;
+	return (res);
 }
