@@ -6,7 +6,7 @@
 /*   By: zalabib- <zalabib-@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/19 06:03:28 by zalabib-          #+#    #+#             */
-/*   Updated: 2025/11/19 06:03:34 by zalabib-         ###   ########.fr       */
+/*   Updated: 2025/11/20 15:05:30 by zalabib-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,17 @@ void	ft_strncpy(char *dst, char *src, int n)
 		i++;
 	}
 	dst[i] = '\0';
+}
+int	find_newline(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\n')
+			return (i);
+		i++;
+	}
+	return (-1);
 }
