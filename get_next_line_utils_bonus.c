@@ -13,6 +13,16 @@
 #include "get_next_line.h"
 #include <stdlib.h>
 
+size_t	ft_strlen(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
 char	*ft_strdup(char *str)
 {
 	int		i;
@@ -39,25 +49,29 @@ char	*ft_strdup(char *str)
 
 char	*ft_strjoin(char *s1, char *s2)
 {
-	char	*res;
-	int		len1;
-	int		len2;
+	char	*str;
+	int		total_len;
+	size_t	i;
 
-	len1 = 0;
-	len2 = 0;
-	if (!s1 || !s2)
+	i = 0;
+	total_len = ft_strlen(s1) + ft_strlen(s2) + 1;
+	str = malloc(sizeof(char) * total_len);
+	if (!str)
 		return (NULL);
-	while (s1[len1])
-		len1++;
-	while (s2[len2])
-		len2++;
-	res = malloc(len1 + len2 + 1);
-	if (!res)
-		return (NULL);
-	ft_strncpy(res, s1, len1);
-	ft_strncpy(res + len1, s2, len2);
-	res[len1 + len2] = '\0';
-	return (res);
+	while (*s1 != '\0')
+	{
+		str[i] = *s1;
+		i++;
+		s1++;
+	}
+	while (*s2 != '\0')
+	{
+		str[i] = *s2;
+		s2++;
+		i++;
+	}
+	str[i] = '\0';
+	return (str);
 }
 
 void	ft_strncpy(char *dst, char *src, int n)
@@ -87,24 +101,4 @@ int	find_newline(char *str)
 		i++;
 	}
 	return (-1);
-}
-
-char	*extract_line(char **stash, int pos)
-{
-	char	*res;
-	char	*new_stash;
-	int		len;
-
-	len = pos + 1;
-	res = malloc(sizeof(char) * (len) + 1);
-	if (!res)
-		return (NULL);
-	ft_strncpy(res, *stash, len);
-	res[len] = '\0';
-	new_stash = ft_strdup(*stash + len);
-	if (!new_stash)
-		return (NULL);
-	free(*stash);
-	*stash = new_stash;
-	return (res);
 }

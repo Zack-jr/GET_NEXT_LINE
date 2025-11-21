@@ -16,6 +16,26 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+char	*extract_line(char **stash, int pos)
+{
+	char	*res;
+	char	*new_stash;
+	int		len;
+
+	len = pos + 1;
+	res = malloc(sizeof(char) * (len) + 1);
+	if (!res)
+		return (NULL);
+	ft_strncpy(res, *stash, len);
+	res[len] = '\0';
+	new_stash = ft_strdup(*stash + len);
+	if (!new_stash)
+		return (NULL);
+	free(*stash);
+	*stash = new_stash;
+	return (res);
+}
+
 char	*process(char **stash, char *buffer, size_t bytes_read)
 {
 	int		i;
@@ -57,31 +77,6 @@ char	*empty_stash(char	**stash)
 		*stash = NULL;
 	}
 	return (line);
-}
-// empty last stash;
-
-char	*read_to_stash(char **stash, int fd, char *buffer)
-{
-	ssize_t	bytes_read;
-	char	*line;
-
-	bytes_read = read(fd, buffer, BUFFER_SIZE);
-	while (bytes_read > 0)
-	{
-		buffer[bytes_read] = '\0';
-		line = process(stash, buffer, bytes_read);
-		if (line)
-			return (line);
-	}
-	if (bytes_read < 0)
-	{
-		free(*stash);
-		*stash = NULL;
-		return (NULL);
-	}
-	if (*stash && **stash)
-		return (empty_stash(stash));
-	return (NULL);
 }
 
 char	*loop(int fd, char *buffer, char *line, char **stash)
@@ -137,10 +132,6 @@ char	*get_next_line(int fd)
 	}
 	return (loop(fd, buffer, NULL, &stash[fd]));
 }
-
-// read into buffer and pass buffer read into a stash
-// process every line
-// if end of file return the stash;
 
 /*
 int main(void)
